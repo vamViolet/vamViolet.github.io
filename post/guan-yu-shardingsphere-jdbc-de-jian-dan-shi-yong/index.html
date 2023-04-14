@@ -1,0 +1,451 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>关于ShardingSphere-JDBC的简单使用 | 日新小馆</title>
+
+<link rel="shortcut icon" href="https://vamViolet.github.io/favicon.ico?v=1681457887214">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://vamViolet.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            日新小馆
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="https://vamViolet.github.io/post/aboutme" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1681457887214"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    关于ShardingSphere-JDBC的简单使用
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-31 ·
+                    </time>
+                    
+                        <a href="https://vamViolet.github.io/tag/P1Bc7ixD0/" class="post-tags">
+                            # java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#font-color-dd00dd%E7%8E%B0%E7%8A%B6%E5%8F%8A%E7%9B%AE%E6%A0%87font"><font color ="dd00dd">现状及目标</font></a></li>
+<li><a href="#font-color-dd00ddshardingsphere-jdbc%E7%AE%80%E4%BB%8Bfont"><font color ="dd00dd">ShardingSphere-JDBC简介</font></a>
+<ul>
+<li><a href="#font-color-dd00ddshardingsphere-jdbc%E6%98%AF%E4%BB%80%E4%B9%88font"><font color ="dd00dd">ShardingSphere-JDBC是什么</font></a></li>
+<li><a href="#font-color-dd00ddshardingsphere-%E7%AE%80%E4%BB%8Bfont"><font color ="dd00dd">ShardingSphere - 简介</font></a></li>
+<li><a href="#font-color-dd00ddshardingsphere-jdbc-%E4%BC%98%E5%8A%BFfont"><font color ="dd00dd">ShardingSphere-JDBC - 优势</font></a></li>
+<li><a href="#font-color-dd00ddsharding-jdbc-%E5%88%86%E7%89%87%E7%AE%97%E6%B3%95font"><font color ="dd00dd">Sharding-JDBC 分片算法</font></a></li>
+<li><a href="#font-color-dd00ddsharding-jdbc-%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5font"><font color ="dd00dd">Sharding-JDBC 分片策略</font></a></li>
+</ul>
+</li>
+<li><a href="#font-color-dd00ddshardingsphere-jdbc-%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8Bfont"><font color ="dd00dd">ShardingSphere-JDBC - 使用案例</font></a></li>
+</ul>
+</li>
+</ul>
+(目录)</p>
+<h2 id="font-color-dd00dd现状及目标font"><font color ="dd00dd">现状及目标</font></h2>
+<blockquote>
+<p>由于旧的业务表中数据量会持续增长，且没有对数据做分表、索引，最终导致查询上亿数据时报错。因此决定使用ShardingSphere-JDBC对表数据做数据分片处理。本文主要介绍ShardingSphere-JDBC的主要功能、优势及用法。</p>
+</blockquote>
+<h2 id="font-color-dd00ddshardingsphere-jdbc简介font"><font color ="dd00dd">ShardingSphere-JDBC简介</font></h2>
+<h3 id="font-color-dd00ddshardingsphere-jdbc是什么font"><font color ="dd00dd">ShardingSphere-JDBC是什么</font></h3>
+<blockquote>
+<p>ShardingSphere-JDBC作为Apache ShardingSphere的一个独立的产品。定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。</p>
+</blockquote>
+<h3 id="font-color-dd00ddshardingsphere-简介font"><font color ="dd00dd">ShardingSphere - 简介</font></h3>
+<blockquote>
+<p>ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。 他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。<br>
+官网：<a href="https://shardingsphere.apache.org/index_zh.html">官网</a><br>
+官方API：<a href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/">sharding-jdbc手册</a></p>
+</blockquote>
+<h3 id="font-color-dd00ddshardingsphere-jdbc-优势font"><font color ="dd00dd">ShardingSphere-JDBC - 优势</font></h3>
+<blockquote>
+<p>Sharding-JDBC的优势在于对Java应用的友好度。<br>
+主要功能<br>
+<img src="https://img-blog.csdnimg.cn/1771c908a63d46d99dd693237b222859.png?x-oss-process=image,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAdmFtVmlvbGV0,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="主要功能" loading="lazy"></p>
+</blockquote>
+<p>区别<br>
+<img src="https://img-blog.csdnimg.cn/9ba9f9a310174c1180f44488f0c55f3a.png?x-oss-process=image,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAdmFtVmlvbGV0,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="对比" loading="lazy"></p>
+<h3 id="font-color-dd00ddsharding-jdbc-分片算法font"><font color ="dd00dd">Sharding-JDBC 分片算法</font></h3>
+<p>通过分片算法将数据分片，支持通过=、&gt;=、&lt;=、&gt;、&lt;、BETWEEN和IN分片。分片算法需要应用方开发者自行实现，可实现的灵活度非常高。<br>
+目前提供4种分片算法。</p>
+<ol>
+<li>
+<p><strong>精确分片算法</strong><br>
+对应PreciseShardingAlgorithm，用于处理使用单一键作为分片键的=与IN进行分片的场景。需要配合StandardShardingStrategy使用。</p>
+</li>
+<li>
+<p><strong>范围分片算法</strong><br>
+对应RangeShardingAlgorithm，用于处理使用单一键作为分片键的BETWEEN AND、&gt;、&lt;、&gt;=、&lt;=进行分片的场景。需要配合StandardShardingStrategy使用。</p>
+</li>
+<li>
+<p><strong>复合分片算法</strong><br>
+对应ComplexKeysShardingAlgorithm，用于处理使用多键作为分片键进行分片的场景，包含多个分片键的逻辑较复杂，需要应用开发者自行处理其中的复杂度。需要配合ComplexShardingStrategy使用。</p>
+</li>
+<li>
+<p><strong>Hint分片算法</strong><br>
+对应HintShardingAlgorithm，用于处理使用Hint行分片的场景。需要配合HintShardingStrategy使用。</p>
+</li>
+</ol>
+<h3 id="font-color-dd00ddsharding-jdbc-分片策略font"><font color ="dd00dd">Sharding-JDBC 分片策略</font></h3>
+<p>包含分片键和分片算法，由于分片算法的独立性，将其独立抽离。真正可用于分片操作的是分片键 + 分片算法，也就是分片策略。目前提供5种分片策略。</p>
+<ol>
+<li>
+<p><strong>标准分片策略</strong><br>
+对应StandardShardingStrategy。提供对SQL语句中的=, &gt;, &lt;, &gt;=, &lt;=, IN和BETWEEN AND的分片操作支持。StandardShardingStrategy只支持单分片键，提供PreciseShardingAlgorithm和RangeShardingAlgorithm两个分片算法。PreciseShardingAlgorithm是必选的，用于处理=和IN的分片。RangeShardingAlgorithm是可选的，用于处理BETWEEN AND, &gt;, &lt;, &gt;=, &lt;=分片，如果不配置RangeShardingAlgorithm，SQL中的BETWEEN AND将按照全库路由处理。</p>
+</li>
+<li>
+<p><strong>复合分片策略</strong><br>
+对应ComplexShardingStrategy。复合分片策略。提供对SQL语句中的=, &gt;, &lt;, &gt;=, &lt;=, IN和BETWEEN AND的分片操作支持。ComplexShardingStrategy支持多分片键，由于多分片键之间的关系复杂，因此并未进行过多的封装，而是直接将分片键值组合以及分片操作符透传至分片算法，完全由应用开发者实现，提供最大的灵活度。</p>
+</li>
+<li>
+<p><strong>行表达式分片策略</strong><br>
+对应InlineShardingStrategy。使用Groovy的表达式，提供对SQL语句中的=和IN的分片操作支持，只支持单分片键。对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: t_user_$-&gt;{u_id % 8} 表示t_user表根据u_id模8，而分成8张表，表名称为t_user_0到t_user_7。</p>
+</li>
+<li>
+<p><strong>Hint分片策略</strong><br>
+对应HintShardingStrategy。通过Hint指定分片值而非从SQL中提取分片值的方式进行分片的策略。</p>
+</li>
+<li>
+<p><strong>不分片策略</strong><br>
+对应NoneShardingStrategy。不分片的策略。</p>
+</li>
+</ol>
+<h2 id="font-color-dd00ddshardingsphere-jdbc-使用案例font"><font color ="dd00dd">ShardingSphere-JDBC - 使用案例</font></h2>
+<ol>
+<li>引入Maven依赖</li>
+</ol>
+<pre><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;
+            &lt;artifactId&gt;sharding-jdbc-spring-boot-starter&lt;/artifactId&gt;
+            &lt;version&gt;${version.sharding-jdbc}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;
+            &lt;artifactId&gt;sharding-jdbc-spring-namespace&lt;/artifactId&gt;
+            &lt;version&gt;${version.sharding-jdbc}&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<ol start="2">
+<li>基于springboot properties的配置文件</li>
+</ol>
+<pre><code class="language-xml">###############################    sharding-jdbc相关配置   #############################
+#配置数据源
+spring.shardingsphere.datasource.names =ds0
+spring.shardingsphere.datasource.ds0.type =com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds0.url =jdbc:mysql://127.0.0.1:3311/sharding-test?serverTimezone=Asia/Shanghai&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;useAffectedRows=true
+spring.shardingsphere.datasource.ds0.username =ENC(s2SThtwAB3Cxlwc+2awSm6qe5CEpa9Fa)
+spring.shardingsphere.datasource.ds0.password =ENC(Fu/RreOI95TySDuYErAG9ucleo9jY/Wv)
+spring.shardingsphere.datasource.ds0.driver-class-name =com.mysql.jdbc.Driver
+spring.shardingsphere.props.sql.show =true
+#连接池初始化连接数
+spring.shardingsphere.datasource.ds0.initial-size=5
+#连接池最大连接数
+spring.shardingsphere.datasource.ds0.max-active=30
+#连接池最小连接数
+spring.shardingsphere.datasource.ds0.min-idle=5
+#获取连接时最大等待时间，单位毫秒
+spring.shardingsphere.datasource.ds0.max-wait=60000
+#配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+spring.shardingsphere.datasource.ds0.time-between-eviction-runs-millis=60000
+#连接保持空闲而不被驱逐的最小时间
+spring.shardingsphere.datasource.ds0.min-evictable-idle-time-millis=300000
+#用来检测连接是否有效的sql，要求是一个查询语句
+spring.shardingsphere.datasource.ds0.validation-query=SELECT 1 FROM DUAL
+#建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+spring.shardingsphere.datasource.ds0.test-while-idle=true
+#申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+spring.shardingsphere.datasource.ds0.test-on-borrow=false
+#归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+spring.shardingsphere.datasource.ds0.test-on-return=false
+#是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。
+spring.shardingsphere.datasource.ds0.pool-prepared-statements=true
+#要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。
+spring.shardingsphere.datasource.ds0.max-pool-prepared-statement-per-connection-size=50
+#配置监控统计拦截的filters，去掉后监控界面sql无法统计
+spring.shardingsphere.datasource.ds0.filters=stat,wall
+#通过connectProperties属性来打开mergeSql功能；慢SQL记录
+spring.shardingsphere.datasource.ds0.connection-properties=druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+#合并多个DruidDataSource的监控数据
+spring.shardingsphere.datasource.ds0.use-global-data-source-stat=true
+
+spring.shardingsphere.sharding.tables.trip_ycym_record.actual-data-nodes=ds0.trip_ycym_record_$-&gt;{2020..2023}${(1..12).collect{t -&gt;t.toString().padLeft(2,'0')}}
+spring.shardingsphere.sharding.tables.trip_ycym_record.table-strategy.standard.sharding-column=paytime
+#精确分片算法类名称，用于=和IN。该类需实现PreciseShardingAlgorithm接口并提供无参数的构造器
+spring.shardingsphere.sharding.tables.trip_ycym_record.table-strategy.standard.precise-algorithm-class-name=com.vamdawn.config.sharding.TripPreciseShardingAlgorithm
+#范围分片算法类名称，用于BETWEEN，可选。该类需实现RangeShardingAlgorithm接口并提供无参数的构造器
+spring.shardingsphere.sharding.tables.trip_ycym_record.table-strategy.standard.range-algorithm-class-name=com.vamdawm.config.sharding.TripRangeShardingAlgorithm
+</code></pre>
+<ol start="3">
+<li>PreciseShardingAlgorithm：用于保存数据时</li>
+</ol>
+<pre><code class="language-java">@Slf4j
+public class TripPreciseShardingAlgorithm implements PreciseShardingAlgorithm&lt;String&gt; {
+
+    @Override
+    public String doSharding(Collection&lt;String&gt; availableTargetNames, PreciseShardingValue&lt;String&gt; shardingValue) {
+        log.info(&quot;availableTargetNames : {}&quot;, availableTargetNames);
+        log.info(&quot;shardingValue:{}&quot;, JSON.toJSONString(shardingValue));
+
+        //获取paytime格式化后的年份月份(2108)
+        Date paytime = DateUtil.strBeauty2Date(shardingValue.getValue());
+        String payTimeFormat = DateUtil.date2LocalDateTime(paytime).format(DateTimeFormatter.ofPattern(&quot;yyyyMM&quot;));
+        for (String tableName : availableTargetNames) {
+            String tableNameFormat = tableName.substring(tableName.lastIndexOf(&quot;_&quot;) + 1);
+            if (ObjectUtils.nullSafeEquals(payTimeFormat, tableNameFormat)) {
+                log.info(&quot;返回最终配置的表名====={}&quot;, tableName);
+                return tableName;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+}
+
+</code></pre>
+<ol start="4">
+<li>RangeShardingAlgorithm：用于根据时间段查询数据时</li>
+</ol>
+<pre><code class="language-java">@Slf4j
+public class TripRangeShardingAlgorithm implements RangeShardingAlgorithm&lt;String&gt; {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(&quot;yyyyMM&quot;);
+    private static final String TABLENAMEPREFIX = &quot;trip_sharding_record_&quot;;
+    private static final String TIMEFORMATTER = &quot;yyyy-MM-dd HH:mm:ss&quot;;
+
+    @Override
+    public Collection&lt;String&gt; doSharding(Collection&lt;String&gt; availableTargetNames, RangeShardingValue&lt;String&gt; shardingValue) {
+        log.info(&quot;目标表名集合availableTargetNames : {}&quot;, availableTargetNames);
+        log.info(&quot;shardingValue:{}&quot;, JSON.toJSONString(shardingValue));
+
+        //最终要查询的实际表名集合
+        Collection&lt;String&gt; actualTableNameList = new LinkedHashSet(availableTargetNames.size());
+        //初始化上线日期
+        String initDateStr = &quot;2021-05-01 00:00:00&quot;;
+        Date initDate = DateUtil.strBeauty2Date(initDateStr);
+        Range&lt;String&gt; valueRange = shardingValue.getValueRange();
+        log.info(&quot;日期范围:{}&quot;, valueRange);
+        LocalDateTime initDateTime = DateUtil.date2LocalDateTime(initDate);
+        String lowerDateStr = valueRange.lowerEndpoint();
+        LocalDateTime lowerDateTime = LocalDateTimeUtil.parse(lowerDateStr, TIMEFORMATTER);
+        //设置最早开始查询时间为上线时间
+        if (lowerDateTime.isBefore(initDateTime)) {
+            lowerDateTime = initDateTime;
+        }
+        String upperDateStr = valueRange.upperEndpoint();
+        LocalDateTime upperDateTime = LocalDateTimeUtil.parse(upperDateStr, TIMEFORMATTER);
+        //获取到相差的月份，计算出之间每个月份表
+        long intervalMonth = lowerDateTime.until(upperDateTime, ChronoUnit.MONTHS);
+        log.info(&quot;获取到相差的月份:{}&quot;, intervalMonth);
+        String tableNameMonth = TABLENAMEPREFIX + lowerDateTime.format(FORMATTER);
+        for (long i = 0; i &lt;= intervalMonth; i++) {
+            String monthFormat = lowerDateTime.plusMonths(i).format(FORMATTER);
+            tableNameMonth = TABLENAMEPREFIX + monthFormat;
+            actualTableNameList.add(tableNameMonth);
+        }
+        log.info(&quot;最终要查询的实际表名集合为:{}&quot;, actualTableNameList);
+        return actualTableNameList;
+    }
+}
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://vamViolet.github.io/post/xue-hua-suan-fa-de-ji-ben-li-nian-he-jian-dan-shi-xian/" class="post-title gt-a-link">
+                    雪花算法的基本理念和简单实现
+                </a>
+            </div>
+        
+
+        
+
+        
+            
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+<script>
+    // md5.min.js
+    !function(n){
+        "use strict";
+        function d(n,t){var r=(65535&n)+(65535&t);return(n>>16)+(t>>16)+(r>>16)<<16|65535&r}
+        function f(n,t,r,e,o,u){return d((c=d(d(t,n),d(e,u)))<<(f=o)|c>>>32-f,r);var c,f}
+        function l(n,t,r,e,o,u,c){return f(t&r|~t&e,n,t,o,u,c)}
+        function v(n,t,r,e,o,u,c){return f(t&e|r&~e,n,t,o,u,c)}
+        function g(n,t,r,e,o,u,c){return f(t^r^e,n,t,o,u,c)}
+        function m(n,t,r,e,o,u,c){return f(r^(t|~e),n,t,o,u,c)}
+        function i(n,t){var r,e,o,u,c;n[t>>5]|=128<<t%32,n[14+(t+64>>>9<<4)]=t;var f=1732584193,i=-271733879,a=-1732584194,h=271733878;for(r=0;r<n.length;r+=16)f=l(e=f,o=i,u=a,c=h,n[r],7,-680876936),h=l(h,f,i,a,n[r+1],12,-389564586),a=l(a,h,f,i,n[r+2],17,606105819),i=l(i,a,h,f,n[r+3],22,-1044525330),f=l(f,i,a,h,n[r+4],7,-176418897),h=l(h,f,i,a,n[r+5],12,1200080426),a=l(a,h,f,i,n[r+6],17,-1473231341),i=l(i,a,h,f,n[r+7],22,-45705983),f=l(f,i,a,h,n[r+8],7,1770035416),h=l(h,f,i,a,n[r+9],12,-1958414417),a=l(a,h,f,i,n[r+10],17,-42063),i=l(i,a,h,f,n[r+11],22,-1990404162),f=l(f,i,a,h,n[r+12],7,1804603682),h=l(h,f,i,a,n[r+13],12,-40341101),a=l(a,h,f,i,n[r+14],17,-1502002290),f=v(f,i=l(i,a,h,f,n[r+15],22,1236535329),a,h,n[r+1],5,-165796510),h=v(h,f,i,a,n[r+6],9,-1069501632),a=v(a,h,f,i,n[r+11],14,643717713),i=v(i,a,h,f,n[r],20,-373897302),f=v(f,i,a,h,n[r+5],5,-701558691),h=v(h,f,i,a,n[r+10],9,38016083),a=v(a,h,f,i,n[r+15],14,-660478335),i=v(i,a,h,f,n[r+4],20,-405537848),f=v(f,i,a,h,n[r+9],5,568446438),h=v(h,f,i,a,n[r+14],9,-1019803690),a=v(a,h,f,i,n[r+3],14,-187363961),i=v(i,a,h,f,n[r+8],20,1163531501),f=v(f,i,a,h,n[r+13],5,-1444681467),h=v(h,f,i,a,n[r+2],9,-51403784),a=v(a,h,f,i,n[r+7],14,1735328473),f=g(f,i=v(i,a,h,f,n[r+12],20,-1926607734),a,h,n[r+5],4,-378558),h=g(h,f,i,a,n[r+8],11,-2022574463),a=g(a,h,f,i,n[r+11],16,1839030562),i=g(i,a,h,f,n[r+14],23,-35309556),f=g(f,i,a,h,n[r+1],4,-1530992060),h=g(h,f,i,a,n[r+4],11,1272893353),a=g(a,h,f,i,n[r+7],16,-155497632),i=g(i,a,h,f,n[r+10],23,-1094730640),f=g(f,i,a,h,n[r+13],4,681279174),h=g(h,f,i,a,n[r],11,-358537222),a=g(a,h,f,i,n[r+3],16,-722521979),i=g(i,a,h,f,n[r+6],23,76029189),f=g(f,i,a,h,n[r+9],4,-640364487),h=g(h,f,i,a,n[r+12],11,-421815835),a=g(a,h,f,i,n[r+15],16,530742520),f=m(f,i=g(i,a,h,f,n[r+2],23,-995338651),a,h,n[r],6,-198630844),h=m(h,f,i,a,n[r+7],10,1126891415),a=m(a,h,f,i,n[r+14],15,-1416354905),i=m(i,a,h,f,n[r+5],21,-57434055),f=m(f,i,a,h,n[r+12],6,1700485571),h=m(h,f,i,a,n[r+3],10,-1894986606),a=m(a,h,f,i,n[r+10],15,-1051523),i=m(i,a,h,f,n[r+1],21,-2054922799),f=m(f,i,a,h,n[r+8],6,1873313359),h=m(h,f,i,a,n[r+15],10,-30611744),a=m(a,h,f,i,n[r+6],15,-1560198380),i=m(i,a,h,f,n[r+13],21,1309151649),f=m(f,i,a,h,n[r+4],6,-145523070),h=m(h,f,i,a,n[r+11],10,-1120210379),a=m(a,h,f,i,n[r+2],15,718787259),i=m(i,a,h,f,n[r+9],21,-343485551),f=d(f,e),i=d(i,o),a=d(a,u),h=d(h,c);return[f,i,a,h]}
+        function a(n){var t,r="",e=32*n.length;for(t=0;t<e;t+=8)r+=String.fromCharCode(n[t>>5]>>>t%32&255);return r}
+        function h(n){var t,r=[];for(r[(n.length>>2)-1]=void 0,t=0;t<r.length;t+=1)r[t]=0;var e=8*n.length;for(t=0;t<e;t+=8)r[t>>5]|=(255&n.charCodeAt(t/8))<<t%32;return r}
+        function e(n){var t,r,e="0123456789abcdef",o="";for(r=0;r<n.length;r+=1)t=n.charCodeAt(r),o+=e.charAt(t>>>4&15)+e.charAt(15&t);return o}
+        function r(n){return unescape(encodeURIComponent(n))}
+        function o(n){return a(i(h(t=r(n)),8*t.length));var t}
+        function u(n,t){return function(n,t){var r,e,o=h(n),u=[],c=[];for(u[15]=c[15]=void 0,16<o.length&&(o=i(o,8*n.length)),r=0;r<16;r+=1)u[r]=909522486^o[r],c[r]=1549556828^o[r];return e=i(u.concat(h(t)),512+8*t.length),a(i(c.concat(e),640))}(r(n),r(t))}
+        function t(n,t,r){return t?r?u(t,n):e(u(t,n)):r?o(n):e(o(n))}
+        "function"==typeof define&&define.amd?define(function(){return t}):"object"==typeof module&&module.exports?module.exports=t:n.md5=t;
+    }(this);
+</script>
+
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'd738b7c2d32140aad282',
+    clientSecret: 'f5af355e15575e654457a3c5a89476a9f806880e',
+    repo: 'comment_repo',
+    owner: 'vamViolet',
+    admin: ['vamViolet'],
+    id: md5(location.pathname),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false       // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/vamViolet" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://vamViolet.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
